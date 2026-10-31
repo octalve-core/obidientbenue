@@ -15,9 +15,10 @@ export const registrationSchema=z.object({
  if(x.website)ctx.addIssue({code:'custom',message:'Invalid submission',path:['website']});
 });
 export type Registration=z.infer<typeof registrationSchema>;
+export function isEnabled(value: string | undefined): boolean { return value?.trim().toLowerCase()==='true'; }
 export function registrationReady(){
  const retention=Number(process.env.PRIVACY_RETENTION_DAYS);
- return directoryReady()&&process.env.REGISTRATION_OPEN==='true'&&process.env.REGISTRATION_DATA_APPROVED==='true'&&
+ return directoryReady()&&isEnabled(process.env.REGISTRATION_OPEN)&&isEnabled(process.env.REGISTRATION_DATA_APPROVED)&&
  Number.isInteger(retention)&&retention>=30&&retention<=730&&
  Boolean(process.env.DATABASE_URL&&process.env.TURNSTILE_SITE_KEY&&process.env.TURNSTILE_SECRET_KEY&&
  process.env.TURNSTILE_ALLOWED_HOSTNAMES&&process.env.PRIVACY_CONTROLLER_NAME&&process.env.PRIVACY_CONTACT_EMAIL&&
