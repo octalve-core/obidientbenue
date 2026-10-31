@@ -1,13 +1,24 @@
+'use client';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, ArrowUpRight, ChevronDown } from 'lucide-react';
-export function Hero(){return <section className="relative isolate overflow-hidden bg-[#071a54] text-white">
-<div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_72%_26%,#3265e85b,transparent_45%),radial-gradient(circle_at_18%_95%,#122d8b,transparent_40%)]"/><div className="pointer-events-none absolute inset-0 opacity-[.12] [background-image:linear-gradient(#ffffff26_1px,transparent_1px),linear-gradient(90deg,#ffffff26_1px,transparent_1px)] [background-size:72px_72px]"/>
-<div className="container-shell relative grid min-h-[680px] items-center gap-16 pb-20 pt-20 lg:grid-cols-[1.12fr_.88fr] lg:pb-28 lg:pt-24">
-<div className="max-w-3xl"><div className="mb-8 inline-flex items-center gap-3 rounded-full border border-white/20 bg-white/10 py-2 pl-2 pr-5 text-[11px] font-medium uppercase tracking-[.2em] text-blue-100"><span className="rounded-full bg-[var(--brand-red)] px-3 py-1.5 text-white">Benue · 2027</span>Public information & community</div>
-<h1 className="max-w-[750px] text-[clamp(3.8rem,7.8vw,7.5rem)] font-medium leading-[.98] tracking-[-.075em]">Obidient<br/><span className="text-[#8bb8ff]">Benue.</span></h1>
-<p className="mt-8 max-w-xl text-[clamp(1rem,1.65vw,1.25rem)] leading-[1.75] text-[#d7e4ff]">A home for information about the movement, the people standing for public office, and the issues shaping Benue’s future.</p>
-<div className="mt-10 flex flex-wrap gap-3"><Link href="/leadership" className="inline-flex items-center gap-3 rounded-full bg-white px-6 py-4 text-sm font-semibold text-[#09235e] shadow-lg shadow-[#050a2c50] transition hover:bg-blue-50">Meet the candidates <ArrowUpRight size={17}/></Link><Link href="/register" className="inline-flex items-center gap-3 rounded-full border border-white/35 px-6 py-4 text-sm font-semibold text-white transition hover:bg-white/10">Community registration <ArrowRight size={17}/></Link></div>
-<div className="mt-16 flex items-center gap-3 text-xs font-medium uppercase tracking-[.16em] text-blue-200"><ChevronDown size={15}/> Explore below</div></div>
-<div className="relative mx-auto w-full max-w-[465px]"><div className="pointer-events-none absolute -right-10 -top-10 size-36 rounded-full border border-white/20"/><div className="pointer-events-none absolute -bottom-11 -left-10 size-44 rounded-full border border-white/10"/><div className="relative overflow-hidden rounded-[2rem] border border-white/25 bg-white p-2 shadow-[0_40px_100px_#020b33aa]"><div className="relative aspect-[.7] overflow-hidden rounded-[1.55rem] bg-[#dce9ff]"><Image src="/images/shija-edoh-campaign.webp" alt="Shija–Edoh Benue campaign artwork featuring Prof. Terhemba Shija and Dr. Raymond Edoh" fill priority className="object-cover object-top" sizes="(max-width:1024px) 90vw, 460px"/></div></div><div className="absolute -bottom-5 -left-5 rounded-2xl bg-[var(--brand-red)] px-5 py-4 shadow-xl shadow-black/30"><span className="block text-[10px] uppercase tracking-[.22em] text-white/80">Benue State</span><span className="mt-1 block text-xl font-semibold">Shija / Edoh</span></div></div>
-</div><div className="absolute bottom-0 h-1 w-full bg-[linear-gradient(90deg,#eb203b_0_24%,#85b7ff_24%_63%,#ffffff_63%)]"/></section>}
+import {useEffect,useState} from 'react';
+import {ArrowUpRight,ArrowRight,Pause,Play} from 'lucide-react';
+const slides=[
+ {src:'/images/shija-edoh-campaign.webp',alt:'Shija–Edoh campaign portrait',label:'Benue State · 2027'},
+ {src:'https://upload.wikimedia.org/wikipedia/commons/1/11/Peter_Obi_2022.jpg',alt:'Peter Obi portrait',label:'National leadership'},
+ {src:'https://upload.wikimedia.org/wikipedia/commons/8/81/Rabiu_Kwankwaso_%28cropped%29.jpg',alt:'Rabiu Musa Kwankwaso portrait',label:'Public service'}
+];
+export function Hero(){
+ const [active,setActive]=useState(0),[playing,setPlaying]=useState(true);
+ useEffect(()=>{if(!playing)return;const t=window.setInterval(()=>setActive(x=>(x+1)%slides.length),6500);return()=>window.clearInterval(t)},[playing]);
+ return <section className="relative isolate overflow-hidden bg-[#071c4e] text-white" aria-label="Obidient Benue">
+  <div className="absolute inset-0" aria-hidden="true">{slides.map((s,i)=><div key={s.src} className={'absolute inset-0 transition-opacity duration-1000 '+(i===active?'opacity-100':'opacity-0')}><Image src={s.src} fill alt="" priority={i===0} sizes="100vw" unoptimized={s.src.startsWith('https://')} className={'object-cover '+(i===0?'object-center':'object-[70%_30%]')+' '+(i===active&&playing?'animate-[hero-zoom_8s_ease-out_forwards]':'')}/></div>)}</div>
+  <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,#04122afa_0%,#051a43e8_41%,#061c4b77_100%)]"/>
+  <div className="container-shell relative flex min-h-[660px] flex-col justify-center py-20 sm:min-h-[720px]"><div className="max-w-[740px]">
+   <p className="inline-flex rounded-full border border-white/30 bg-white/10 px-5 py-2 text-xs font-medium uppercase tracking-[.17em] text-white">Benue State · Nigeria</p>
+   <h1 className="mt-8 text-[clamp(3.5rem,8vw,7.25rem)] font-medium leading-[.98] tracking-[-.06em]">Obidient<br/><span className="text-[#d3e3ff]">Benue.</span></h1>
+   <p className="mt-8 max-w-xl text-lg leading-9 text-[#f1f5ff]">Leadership, service and community participation across Benue State.</p>
+   <div className="mt-10 flex flex-wrap gap-3"><Link href="/leadership" className="inline-flex min-h-12 items-center gap-2 rounded-full bg-white px-7 py-3 text-sm font-semibold text-[#071d54] transition hover:bg-blue-50">Meet the candidates <ArrowUpRight size={17}/></Link><Link href="/register" className="inline-flex min-h-12 items-center gap-2 rounded-full border border-[#f8c0cb] bg-[#bd1838] px-7 py-3 text-sm font-semibold text-white transition hover:bg-[#91112b]">Register <ArrowRight size={17}/></Link></div>
+  </div><div className="mt-14 flex items-center gap-4"><div className="flex gap-2" role="group" aria-label="Featured image selection">{slides.map((s,i)=><button key={s.src} type="button" onClick={()=>setActive(i)} aria-label={'View image '+(i+1)} aria-current={i===active?'true':undefined} className={'h-2 rounded-full transition-all '+(i===active?'w-11 bg-white':'w-5 bg-white/40 hover:bg-white/75')}/>)}</div><button type="button" onClick={()=>setPlaying(x=>!x)} aria-label={playing?'Pause slideshow':'Play slideshow'} className="grid size-9 place-items-center rounded-full border border-white/40 text-white">{playing?<Pause size={15}/>:<Play size={15}/>}</button><span className="text-xs font-medium uppercase tracking-wider text-white/85">{slides[active].label}</span></div></div>
+ </section>;
+}

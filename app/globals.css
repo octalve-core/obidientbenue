@@ -1,7 +1,8 @@
 @import 'tailwindcss';
-:root{--brand-ink:#0a1c3b;--brand-navy:#071b57;--brand-blue:#163aa0;--brand-sky:#eaf2ff;--brand-red:#eb203b;--background:#fff;--foreground:#0a1c3b}
+:root{--brand-ink:#0a1c3b;--brand-navy:#071b57;--brand-blue:#163aa0;--brand-sky:#eaf2ff;--brand-red:#c41c3c;--background:#fff;--foreground:#0a1c3b}
 @theme inline{--color-background:var(--background);--color-foreground:var(--foreground);--color-brand-navy:var(--brand-navy);--color-brand-blue:var(--brand-blue);--color-brand-red:var(--brand-red)}
 html{scroll-behavior:smooth}body{margin:0;background:#fff;color:var(--brand-ink);font-family:Arial,Helvetica,sans-serif}*,*::before,*::after{box-sizing:border-box}button,input,select,textarea{font:inherit}a{text-decoration:none;color:inherit}button,a{-webkit-tap-highlight-color:transparent}
 :focus-visible{outline:3px solid var(--brand-red);outline-offset:3px}.container-shell{width:min(1200px,calc(100% - 2.25rem));margin-inline:auto}
 .skip-link{position:absolute;left:1rem;top:-6rem;z-index:1000;background:white;padding:1rem;box-shadow:0 5px 30px #0002}.skip-link:focus{top:1rem}
+@keyframes hero-zoom{from{transform:scale(1)}to{transform:scale(1.09)}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition-duration:0.01ms!important;animation-duration:0.01ms!important}}
