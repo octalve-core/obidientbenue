@@ -1,7 +1,7 @@
 import {NextRequest,NextResponse} from 'next/server';
 import {randomUUID,createHmac} from 'node:crypto';
 import {neon} from '@neondatabase/serverless';
-import {registrationSchema,registrationReady,CONSENT_VERSION} from '@/lib/registration';
+import {registrationSchema,registrationReady,databaseReady,CONSENT_VERSION} from '@/lib/registration';
 import {verifyLocation} from '@/lib/electoral';
 export const runtime='nodejs';
 const json=(message:string,status:number)=>NextResponse.json({message},{status,headers:{'Cache-Control':'no-store'}});
@@ -17,7 +17,7 @@ async function verifyCaptcha(token:string,ip:string){
  }catch{return false;}
 }
 export async function POST(req:NextRequest){
- if(!registrationReady())return json('Registration is currently closed. Please check back later.',503);
+ if(!registrationReady()||!await databaseReady())return json('Registration is currently closed. Please check back later.',503);
  const size=Number(req.headers.get('content-length')||0);if(size>12000)return json('Your submission is too large.',413);
  let input:unknown;try{input=await req.json();}catch{return json('Please review your details.',400);}
  const validated=registrationSchema.safeParse(input);

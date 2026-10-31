@@ -26,3 +26,11 @@ export function registrationReady(){
  process.env.ADMIN_SESSION_SECRET&&process.env.ADMIN_SESSION_SECRET.length>=32&&
  process.env.ADMIN_ALLOWED_EMAILS&&process.env.ADMIN_AUTH_ORIGIN);
 }
+
+export async function databaseReady(){
+ if(!process.env.DATABASE_URL)return false;
+ try{const {neon}=await import('@neondatabase/serverless');const sql=neon(process.env.DATABASE_URL);
+ const result=await sql`SELECT to_regclass('public.community_registrations') IS NOT NULL AND to_regclass('public.registration_rate_limits') IS NOT NULL AND to_regclass('public.registration_admin_audit') IS NOT NULL AS ready`;
+ return result[0]?.ready===true;
+ }catch{return false;}
+}
