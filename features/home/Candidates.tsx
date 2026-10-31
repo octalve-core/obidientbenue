@@ -1,5 +1,22 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import {ArrowUpRight} from 'lucide-react';
 import {candidates} from '@/content/candidates';
-export function Candidates(){return <section className="bg-[#0b286d] py-24 text-white sm:py-28"><div className="container-shell"><div className="mb-12 flex flex-wrap items-end justify-between gap-6"><div><p className="text-xs font-medium uppercase tracking-[.2em] text-[#c0d8ff]">Leadership profiles</p><h2 className="mt-4 text-[clamp(2.6rem,5vw,5rem)] font-medium tracking-[-.06em]">Meet the candidates.</h2></div><Link href="/leadership" className="inline-flex items-center gap-2 rounded-full border border-white/40 px-5 py-3 text-sm font-medium text-white hover:bg-white/10">All profiles <ArrowUpRight size={17}/></Link></div><div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">{candidates.map((p,i)=><Link href={'/leadership/'+p.slug} key={p.slug} className="group overflow-hidden rounded-2xl border border-white/20 bg-[#153680] transition hover:-translate-y-1"><div className="relative aspect-[4/3] overflow-hidden bg-blue-100"><Image src={p.image} alt={p.imageAlt} fill sizes="(max-width:768px) 100vw, 25vw" className="object-cover object-top transition duration-500 group-hover:scale-105" unoptimized={p.image.startsWith('https://')}/></div><div className="p-6"><p className="text-[11px] font-medium uppercase tracking-wider text-[#d4e4ff]">0{i+1} / {p.office}</p><h3 className="mt-3 text-xl font-medium">{p.name}</h3><span className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-white">View biography <ArrowUpRight size={16}/></span></div></Link>)}</div></div></section>}
+import {CandidateProfileCard} from '@/features/leadership/CandidateProfileCard';
+
+export function Candidates(){
+  return <section className="bg-[#f5f8fd] py-20 sm:py-28" aria-labelledby="candidate-section-title">
+    <div className="container-shell">
+      <div className="mb-12 flex flex-wrap items-end justify-between gap-7">
+        <div><p className="text-xs font-semibold uppercase tracking-[.19em] text-[#be1a39]">Meet the ticket</p>
+          <h2 id="candidate-section-title" className="mt-4 max-w-3xl text-[clamp(2.6rem,5vw,4.75rem)] font-medium leading-[1.08] tracking-[-.055em] text-[#071c55]">The candidates.</h2>
+        </div>
+        <Link href="/leadership" className="inline-flex items-center gap-2 rounded-full border border-[#b7c8e3] bg-white px-6 py-3 text-sm font-semibold text-[#092e7c] transition hover:border-[#123d95] hover:bg-[#e8f0fe]">
+          Explore all profiles <ArrowUpRight size={17} aria-hidden="true"/>
+        </Link>
+      </div>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        {candidates.map(candidate=><CandidateProfileCard key={candidate.slug} candidate={candidate}/>)}
+      </div>
+    </div>
+  </section>;
+}
