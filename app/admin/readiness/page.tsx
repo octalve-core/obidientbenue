@@ -2,7 +2,7 @@ import type {Metadata} from 'next';
 import Link from 'next/link';
 import {redirect} from 'next/navigation';
 import {getAdminEmail,authReady} from '@/lib/admin-auth';
-import {databaseReady,registrationReady} from '@/lib/registration';
+import {databaseReady,registrationReady,isEnabled} from '@/lib/registration';
 import {directoryReady,getLGAs,getWards,getPollingUnits} from '@/lib/electoral';
 export const dynamic='force-dynamic';
 export const metadata:Metadata={title:'Registration Readiness',robots:{index:false,follow:false}};
@@ -24,8 +24,8 @@ export default async function RegistrationReadiness(){
  {title:'Privacy identity and contact',pass:!!e.PRIVACY_CONTROLLER_NAME&&!!e.PRIVACY_CONTACT_EMAIL,description:'An organisation and a monitored contact must be published'},
  {title:'Retention policy setting',pass:Number.isInteger(retention)&&retention>=30&&retention<=730,description:'The set period is in range. Operational deletion procedures need separate verification'},
  {title:'Secure signing keys',pass:!!e.REGISTRATION_HASH_SECRET&&e.REGISTRATION_HASH_SECRET.length>=32&&!!e.ADMIN_SESSION_SECRET&&e.ADMIN_SESSION_SECRET.length>=32,description:'Two distinct signing secrets, each at least 32 characters'},
- {title:'Location data approval',pass:e.REGISTRATION_DATA_APPROVED==='true',description:'Manual confirmation of the official electoral records'},
- {title:'Public registration switch',pass:e.REGISTRATION_OPEN==='true',description:'The final switch after all acceptance checks'}
+ {title:'Location data approval',pass:isEnabled(e.REGISTRATION_DATA_APPROVED),description:'Manual confirmation of the official electoral records'},
+ {title:'Public registration switch',pass:isEnabled(e.REGISTRATION_OPEN),description:'The final switch after all acceptance checks'}
  ];
  const open=registrationReady()&&database;
  return <main id="main-content" className="container-shell min-h-[64vh] py-14">
