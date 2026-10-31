@@ -4,9 +4,9 @@ import Link from 'next/link';
 import {useEffect,useState} from 'react';
 import {ArrowUpRight,ArrowRight,Pause,Play} from 'lucide-react';
 const slides=[
- {src:'/images/shija-edoh-campaign.webp',alt:'Shija–Edoh campaign portrait',label:'Benue State · 2027'},
- {src:'https://upload.wikimedia.org/wikipedia/commons/1/11/Peter_Obi_2022.jpg',alt:'Peter Obi portrait',label:'National leadership'},
- {src:'https://upload.wikimedia.org/wikipedia/commons/8/81/Rabiu_Kwankwaso_%28cropped%29.jpg',alt:'Rabiu Musa Kwankwaso portrait',label:'Public service'}
+ {src:'/images/hero-rally-01.webp',alt:'Benue community gathering',label:'Benue State · 2027'},
+ {src:'/images/hero-rally-02.webp',alt:'Community leaders at a public political gathering',label:'Leadership and service'},
+ {src:'/images/hero-rally-03.webp',alt:'Public gathering with Peter Obi and political leaders',label:'Community participation'}
 ];
 export function Hero(){
  const [active,setActive]=useState(0),[playing,setPlaying]=useState(true);
