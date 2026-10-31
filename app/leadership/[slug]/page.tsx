@@ -1,0 +1,14 @@
+import type {Metadata} from 'next';
+import Image from 'next/image';
+import Link from 'next/link';
+import {notFound} from 'next/navigation';
+import {ArrowLeft,ArrowUpRight} from 'lucide-react';
+import {candidates,getCandidate} from '@/content/candidates';
+export function generateStaticParams(){return candidates.map(c=>({slug:c.slug}));}
+export async function generateMetadata({params}:{params:Promise<{slug:string}>}):Promise<Metadata>{const p=getCandidate((await params).slug);return {title:p?.name||'Candidate profile',description:p?.intro};}
+export default async function Biography({params}:{params:Promise<{slug:string}>}){
+ const p=getCandidate((await params).slug);if(!p)notFound();
+ return <main id="main-content"><section className="bg-[#091f60] py-16 text-white sm:py-24"><div className="container-shell"><Link href="/leadership" className="inline-flex items-center gap-2 text-sm text-blue-100 hover:text-white"><ArrowLeft size={17}/> Back to candidates</Link><p className="mt-12 text-xs font-medium uppercase tracking-[.19em] text-[#c1d8ff]">{p.office}</p><h1 className="mt-4 max-w-4xl text-[clamp(2.8rem,6vw,5.6rem)] font-medium leading-[1.06] tracking-[-.055em]">{p.name}</h1><p className="mt-6 max-w-3xl text-lg leading-8 text-blue-100">{p.intro}</p></div></section>
+ <div className="container-shell grid gap-12 py-16 lg:grid-cols-[.85fr_1.15fr] lg:py-24"><div className="relative aspect-[4/5] overflow-hidden rounded-3xl bg-[#eaf1ff]"><Image src={p.image} fill alt={p.imageAlt} sizes="(max-width:1024px) 100vw, 42vw" className="object-cover object-top" unoptimized={p.image.startsWith('https://')}/></div><div><p className="text-xs font-medium uppercase tracking-[.18em] text-[#c32040]">Biography</p><h2 className="mt-4 text-3xl font-medium tracking-tight text-[#0b2e77]">Background and public service</h2>{p.biography.map((part,i)=><p key={i} className="mt-6 text-base leading-8 text-slate-600">{part}</p>)}<h3 className="mt-10 border-t border-[#dfe6f3] pt-8 text-xl font-medium text-[#0b2e77]">Career highlights</h3><div className="mt-4 divide-y divide-slate-200">{p.highlights.map(h=><div key={h.date} className="grid gap-2 py-4 sm:grid-cols-[150px_1fr]"><span className="text-sm font-medium text-[#1946a1]">{h.date}</span><span className="text-sm leading-7 text-slate-600">{h.title}</span></div>)}</div></div></div>
+ <section className="bg-[#f3f7ff] py-16"><div className="container-shell"><h2 className="text-2xl font-medium text-[#0b2e77]">Explore more profiles</h2><div className="mt-6 grid gap-4 md:grid-cols-3">{candidates.filter(c=>c.slug!==p.slug).map(c=><Link key={c.slug} href={'/leadership/'+c.slug} className="flex items-center justify-between rounded-xl bg-white p-6 text-sm font-medium text-[#164097] hover:shadow-lg">{c.name}<ArrowUpRight size={17}/></Link>)}</div></div></section></main>;
+}
