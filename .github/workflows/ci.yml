@@ -1,0 +1,32 @@
+name: Quality gates
+on:
+  push:
+    branches: [main, 'feature/**']
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.28.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: package.json
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+      - name: Lint
+        run: pnpm lint
+      - name: Strict TypeScript
+        run: pnpm typecheck
+      - name: Directory integrity tests
+        run: pnpm test
+      - name: Production build
+        run: pnpm build
