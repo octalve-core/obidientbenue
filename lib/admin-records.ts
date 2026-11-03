@@ -1,6 +1,7 @@
 import 'server-only';
 import {neon} from '@neondatabase/serverless';
 import {getLGAs,getWards,getPollingUnits} from '@/lib/electoral';
+import {csvCell} from './csv-escape.mjs';
 
 export const PAGE_SIZE=40;
 const categories=new Set(['Member','Volunteer','Interested','Other']);
@@ -124,11 +125,7 @@ export async function getExportBatch(f:AdminFilters,cursor:string|null,limit=500
  ORDER BY id DESC LIMIT ${limit}`;
  return rows as RegistrationRecord[];
 }
-export function csvCell(value:unknown,forceText=false){
-  let text=String(value??'').replace(/\u0000/g,'');
-  if(forceText||/^[\s]*[=+\-@＝＋－＠]/u.test(text))text="'"+text;
-  return '"'+text.replace(/"/g,'""')+'"';
-}
+export {csvCell} from './csv-escape.mjs';
 export const CSV_HEADERS=['Reference','Submitted (WAT)','Full name','Phone','Category','Registration method','Assisted by','LGA','LGA code','Ward','Ward code','Polling unit','Polling unit code','Consent recorded (WAT)','Optional updates consent','Consent version','Possible duplicate'];
 export function csvRecord(row:RegistrationRecord){
   const data=[
