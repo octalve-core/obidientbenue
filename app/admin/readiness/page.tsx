@@ -29,15 +29,15 @@ export default async function RegistrationReadiness(){
  ];
  const open=registrationReady()&&database;
  return <main id="main-content" className="container-shell min-h-[64vh] py-14">
-  <div className="mb-9"><p className="text-xs font-medium uppercase tracking-[.16em] text-red-600">Private workspace</p>
-  <h1 className="mt-3 text-3xl font-medium text-[#112d70]">Registration readiness</h1>
+  <div className="mb-9"><p className="text-xs font-medium uppercase tracking-[.16em] text-[#c32835]">Private workspace</p>
+  <h1 className="mt-3 text-3xl font-medium text-[#075336]">Registration readiness</h1>
   <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600">An administrator-only overview of the safeguards needed before receiving new registrations. Security credentials are never displayed here.</p></div>
-  <section className="rounded-2xl border border-[#dfe6f2] bg-white p-5 sm:p-8">
-   <div className="flex flex-wrap items-center justify-between gap-3"><h2 className="text-xl font-medium text-[#112d70]">Current status</h2>
-   <span className={'rounded-full px-4 py-2 text-xs font-medium '+(open?'bg-green-50 text-green-800':'bg-amber-50 text-amber-900')}>{open?'Registration configuration is enabled':'Registration is closed'}</span></div>
-   <div className="mt-6 space-y-1">{checks.map(c=><div key={c.title} className="flex items-start justify-between gap-4 border-t border-slate-100 py-4"><div><p className="text-sm font-medium text-slate-800">{c.title}</p><p className="mt-1 text-xs leading-5 text-slate-500">{c.description}</p></div><span className={'shrink-0 rounded-full px-3 py-1 text-xs font-medium '+(c.pass?'bg-green-50 text-green-800':'bg-amber-50 text-amber-900')}>{c.pass?'Configured':'Needs attention'}</span></div>)}</div>
+  <section className="rounded-2xl border border-[#dceadd] bg-white p-5 sm:p-8">
+   <div className="flex flex-wrap items-center justify-between gap-3"><h2 className="text-xl font-medium text-[#075336]">Current status</h2>
+   <span className={'rounded-full px-4 py-2 text-xs font-medium '+(open?'bg-[#e8f7ec] text-[#05643e]':'bg-amber-50 text-amber-900')}>{open?'Registration configuration is enabled':'Registration is closed'}</span></div>
+   <div className="mt-6 space-y-1">{checks.map(c=><div key={c.title} className="flex items-start justify-between gap-4 border-t border-slate-100 py-4"><div><p className="text-sm font-medium text-slate-800">{c.title}</p><p className="mt-1 text-xs leading-5 text-slate-500">{c.description}</p></div><span className={'shrink-0 rounded-full px-3 py-1 text-xs font-medium '+(c.pass?'bg-[#e8f7ec] text-[#05643e]':'bg-amber-50 text-amber-900')}>{c.pass?'Configured':'Needs attention'}</span></div>)}</div>
   </section>
   <p className="mt-6 max-w-3xl text-xs leading-6 text-slate-500">Configuration checks alone do not certify a live registration service. Before public release, verify official polling-unit data, Google access, Cloudflare challenges, valid and invalid submissions, review workflows and the retention/deletion process. Changing Vercel Production settings requires a new Production deployment.</p>
-  <Link href="/admin/registrations" className="mt-7 inline-flex rounded-full border border-blue-200 px-5 py-3 text-sm font-medium text-[#112d70]">Return to registration office</Link>
+  <Link href="/admin/registrations" className="mt-7 inline-flex rounded-full border border-[#c5decf] px-5 py-3 text-sm font-medium text-[#075336]">Return to registration office</Link>
  </main>;
 }
