@@ -1,6 +1,6 @@
 import {NextRequest,NextResponse} from 'next/server';
 import {getAdminEmail} from '@/lib/admin-auth';
-import {validAdminWriteOrigin} from '@/lib/admin-write-origin';
+import {validAdminFormPost} from '@/lib/admin-write-origin';
 import {auditAdmin,CSV_HEADERS,csvCell,csvRecord,getExportBatch,parseAdminFilters} from '@/lib/admin-records';
 export const runtime='nodejs';
 export const dynamic='force-dynamic';
@@ -9,9 +9,10 @@ const reject=(msg:string,status:number)=>NextResponse.json({message:msg},{status
 export async function POST(req:NextRequest){
  const email=await getAdminEmail();
  if(!email)return reject('Please sign in to the Registration Office.',401);
- if(!validAdminWriteOrigin(req))return reject('Invalid export origin.',403);
+
  let form:FormData;
  try{form=await req.formData()}catch{return reject('Invalid export request.',400)}
+ if(!await validAdminFormPost(req,form,'export'))return reject('Invalid export request.',403);
  const scope=form.get('scope');
  if(scope!=='all'&&scope!=='filtered')return reject('Invalid export selection.',400);
  const p=new URLSearchParams();
