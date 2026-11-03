@@ -1,39 +1,27 @@
 import 'server-only';
-import {createHmac,timingSafeEqual} from 'node:crypto';
 import {cookies} from 'next/headers';
 import type {NextRequest} from 'next/server';
 import {SESSION_COOKIE,getAdminEmail} from '@/lib/admin-auth';
+import {checkAdminProof,generateAdminProof,type AdminAction,type AdminCheckReason} from './admin-csrf-core.mjs';
 
-const trustedOrigins=new Set([
- 'https://www.obidientbenue.com',
- 'https://obidientbenue.com',
- 'https://obidientbenue.vercel.app'
-]);
+export type AdminActionResult={ok:boolean;reason:AdminCheckReason|'not_authenticated'};
 
-type AdminAction='export'|'logout';
-
-/** CSRF proof bound to this administrator's signed session, not to Vercel's internal Host. */
-function tokenFor(session:string,action:AdminAction):string{
- return createHmac('sha256',process.env.ADMIN_SESSION_SECRET!)
-  .update('obidient-benue:admin-csrf:v1\0'+action+'\0'+session).digest('hex');
-}
+/** Proof generated from a verified session. Never put the value in a URL. */
 export async function adminFormToken(action:AdminAction):Promise<string>{
- if(!await getAdminEmail())throw new Error('Admin login required');
+ if(!await getAdminEmail())throw new Error('Administrator session required');
  const session=(await cookies()).get(SESSION_COOKIE)?.value;
- if(!session||!process.env.ADMIN_SESSION_SECRET)throw new Error('Admin login required');
- return tokenFor(session,action);
+ if(!session||!process.env.ADMIN_SESSION_SECRET)throw new Error('Administrator session required');
+ return generateAdminProof(session,process.env.ADMIN_SESSION_SECRET,action);
 }
-export async function validAdminFormPost(req:NextRequest,form:FormData,action:AdminAction):Promise<boolean>{
- const site=req.headers.get('sec-fetch-site');
- if(site&&site!=='same-origin'&&site!=='none')return false;
- const origin=req.headers.get('origin');
- if(origin&&!trustedOrigins.has(origin))return false;
- const submitted=form.get('_csrf');
- if(typeof submitted!=='string'||!/^[a-f0-9]{64}$/.test(submitted))return false;
- const session=req.cookies.get(SESSION_COOKIE)?.value;
- if(!session||!process.env.ADMIN_SESSION_SECRET)return false;
- if(!await getAdminEmail())return false;
- const expected=Buffer.from(tokenFor(session,action),'hex');
- const received=Buffer.from(submitted,'hex');
- return expected.length===received.length&&timingSafeEqual(expected,received);
+
+export async function verifyAdminAction(req:NextRequest,action:AdminAction,token:unknown):Promise<AdminActionResult>{
+ if(!await getAdminEmail())return {ok:false,reason:'not_authenticated'};
+ return checkAdminProof({
+  session:req.cookies.get(SESSION_COOKIE)?.value,
+  secret:process.env.ADMIN_SESSION_SECRET,
+  action,
+  token,
+  origin:req.headers.get('origin'),
+  fetchSite:req.headers.get('sec-fetch-site')
+ });
 }
