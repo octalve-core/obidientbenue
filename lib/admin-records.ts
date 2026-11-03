@@ -58,39 +58,39 @@ export function registrationSql(){
 }
 export async function auditAdmin(email:string,action:string,reference:string|null=null){
   const sql=registrationSql();
-  await sql\`INSERT INTO registration_admin_audit(actor_email,action,reference) VALUES (\${email},\${action},\${reference}::uuid)\`;
+  await sql`INSERT INTO registration_admin_audit(actor_email,action,reference) VALUES (${email},${action},${reference}::uuid)`;
 }
 export async function loadRegistrationPage(f:AdminFilters){
  const sql=registrationSql();
  const start=toLagosIso(f.from),end=toLagosIso(f.to);
  const pattern='%'+f.q+'%';
- const stats=await sql\`
+ const stats=await sql`
  SELECT COUNT(*)::int AS total,
         COUNT(*) FILTER (WHERE method='Assisted')::int AS assisted,
         COUNT(*) FILTER (WHERE phone IS NOT NULL AND phone<>'')::int AS contacted
  FROM community_registrations
- WHERE (\${f.lga}::text='' OR lga_code=\${f.lga})
-   AND (\${f.ward}::text='' OR ward_code=\${f.ward})
-   AND (\${f.pu}::text='' OR pu_code=\${f.pu})
-   AND (\${f.category}::text='' OR category=\${f.category})
-   AND (\${start}::timestamptz IS NULL OR created_at>=\${start}::timestamptz)
-   AND (\${end}::timestamptz IS NULL OR created_at<=\${end}::timestamptz)
-   AND (\${f.q}::text='' OR full_name ILIKE \${pattern} OR COALESCE(phone,'') ILIKE \${pattern} OR reference::text ILIKE \${pattern})
- \`;
- const rows=await sql\`
+ WHERE (${f.lga}::text='' OR lga_code=${f.lga})
+   AND (${f.ward}::text='' OR ward_code=${f.ward})
+   AND (${f.pu}::text='' OR pu_code=${f.pu})
+   AND (${f.category}::text='' OR category=${f.category})
+   AND (${start}::timestamptz IS NULL OR created_at>=${start}::timestamptz)
+   AND (${end}::timestamptz IS NULL OR created_at<=${end}::timestamptz)
+   AND (${f.q}::text='' OR full_name ILIKE ${pattern} OR COALESCE(phone,'') ILIKE ${pattern} OR reference::text ILIKE ${pattern})
+ `;
+ const rows=await sql`
  SELECT id::text,reference::text,full_name,phone,category,method,assisted_by,
         lga_code,ward_code,pu_code,pu_name,created_at
  FROM community_registrations
- WHERE (\${f.lga}::text='' OR lga_code=\${f.lga})
-   AND (\${f.ward}::text='' OR ward_code=\${f.ward})
-   AND (\${f.pu}::text='' OR pu_code=\${f.pu})
-   AND (\${f.category}::text='' OR category=\${f.category})
-   AND (\${start}::timestamptz IS NULL OR created_at>=\${start}::timestamptz)
-   AND (\${end}::timestamptz IS NULL OR created_at<=\${end}::timestamptz)
-   AND (\${f.q}::text='' OR full_name ILIKE \${pattern} OR COALESCE(phone,'') ILIKE \${pattern} OR reference::text ILIKE \${pattern})
+ WHERE (${f.lga}::text='' OR lga_code=${f.lga})
+   AND (${f.ward}::text='' OR ward_code=${f.ward})
+   AND (${f.pu}::text='' OR pu_code=${f.pu})
+   AND (${f.category}::text='' OR category=${f.category})
+   AND (${start}::timestamptz IS NULL OR created_at>=${start}::timestamptz)
+   AND (${end}::timestamptz IS NULL OR created_at<=${end}::timestamptz)
+   AND (${f.q}::text='' OR full_name ILIKE ${pattern} OR COALESCE(phone,'') ILIKE ${pattern} OR reference::text ILIKE ${pattern})
  ORDER BY created_at DESC,id DESC
- LIMIT \${PAGE_SIZE} OFFSET \${(f.page-1)*PAGE_SIZE}\`;
- const totalAll=await sql\`SELECT COUNT(*)::int AS total FROM community_registrations\`;
+ LIMIT ${PAGE_SIZE} OFFSET ${(f.page-1)*PAGE_SIZE}`;
+ const totalAll=await sql`SELECT COUNT(*)::int AS total FROM community_registrations`;
  return {rows:rows as RegistrationRecord[],total:Number(stats[0]?.total||0),
          assisted:Number(stats[0]?.assisted||0),contacted:Number(stats[0]?.contacted||0),
          totalAll:Number(totalAll[0]?.total||0)};
@@ -98,30 +98,30 @@ export async function loadRegistrationPage(f:AdminFilters){
 export async function getRegistrationDetail(reference:string){
  if(!/^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i.test(reference))return null;
  const sql=registrationSql();
- const rows=await sql\`
+ const rows=await sql`
  SELECT id::text,reference::text,full_name,phone,category,method,assisted_by,
    lga_code,ward_code,pu_code,pu_name,consent_at,communication_consent,
    consent_version,potential_duplicate,created_at
- FROM community_registrations WHERE reference=\${reference}::uuid LIMIT 1\`;
+ FROM community_registrations WHERE reference=${reference}::uuid LIMIT 1`;
  return (rows[0] as RegistrationRecord|undefined)||null;
 }
 export async function getExportBatch(f:AdminFilters,cursor:string|null,limit=500){
  const sql=registrationSql();
  const start=toLagosIso(f.from),end=toLagosIso(f.to),pattern='%'+f.q+'%';
- const rows=await sql\`
+ const rows=await sql`
  SELECT id::text,reference::text,full_name,phone,category,method,assisted_by,
   lga_code,ward_code,pu_code,pu_name,consent_at,communication_consent,
   consent_version,potential_duplicate,created_at
  FROM community_registrations
- WHERE (\${f.lga}::text='' OR lga_code=\${f.lga})
-  AND (\${f.ward}::text='' OR ward_code=\${f.ward})
-  AND (\${f.pu}::text='' OR pu_code=\${f.pu})
-  AND (\${f.category}::text='' OR category=\${f.category})
-  AND (\${start}::timestamptz IS NULL OR created_at>=\${start}::timestamptz)
-  AND (\${end}::timestamptz IS NULL OR created_at<=\${end}::timestamptz)
-  AND (\${f.q}::text='' OR full_name ILIKE \${pattern} OR COALESCE(phone,'') ILIKE \${pattern} OR reference::text ILIKE \${pattern})
-  AND (\${cursor}::bigint IS NULL OR id<\${cursor}::bigint)
- ORDER BY id DESC LIMIT \${limit}\`;
+ WHERE (${f.lga}::text='' OR lga_code=${f.lga})
+  AND (${f.ward}::text='' OR ward_code=${f.ward})
+  AND (${f.pu}::text='' OR pu_code=${f.pu})
+  AND (${f.category}::text='' OR category=${f.category})
+  AND (${start}::timestamptz IS NULL OR created_at>=${start}::timestamptz)
+  AND (${end}::timestamptz IS NULL OR created_at<=${end}::timestamptz)
+  AND (${f.q}::text='' OR full_name ILIKE ${pattern} OR COALESCE(phone,'') ILIKE ${pattern} OR reference::text ILIKE ${pattern})
+  AND (${cursor}::bigint IS NULL OR id<${cursor}::bigint)
+ ORDER BY id DESC LIMIT ${limit}`;
  return rows as RegistrationRecord[];
 }
 export function csvCell(value:unknown,forceText=false){
