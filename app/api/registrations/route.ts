@@ -41,6 +41,6 @@ export async function POST(req:NextRequest){
    VALUES (${reference},${d.fullName},${d.phone||null},${d.category},${d.method},
    ${d.method==='Assisted'?d.assistedBy:null},${d.lgaCode},${d.wardCode},${location.code},${location.name},
    NOW(),${d.communicationConsent},'PENDING',${CONSENT_VERSION},${fingerprint},${possibleDuplicate})`;
-  return NextResponse.json({reference,message:'Your registration has been received for review.'},{status:201,headers:{'Cache-Control':'no-store'}});
+  return NextResponse.json({reference,message:'Your community registration has been received successfully.'},{status:201,headers:{'Cache-Control':'no-store'}});
  }catch{return json('We could not save your information. Please try again.',503);}
 }

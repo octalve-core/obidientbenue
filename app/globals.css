@@ -1,6 +1,6 @@
 @import 'tailwindcss';
-:root{--brand-ink:#0a1c3b;--brand-navy:#071b57;--brand-blue:#163aa0;--brand-sky:#eaf2ff;--brand-red:#c41c3c;--background:#fff;--foreground:#0a1c3b}
-@theme inline{--color-background:var(--background);--color-foreground:var(--foreground);--color-brand-navy:var(--brand-navy);--color-brand-blue:var(--brand-blue);--color-brand-red:var(--brand-red)}
+:root{--brand-ink:#143B29;--brand-navy:#06452E;--brand-blue:#068A4F;--brand-green:#068A4F;--brand-green-dark:#047546;--brand-sky:#F0F9F3;--brand-red:#ED3237;--background:#fff;--foreground:#143B29}
+@theme inline{--color-background:var(--background);--color-foreground:var(--foreground);--color-brand-navy:var(--brand-navy);--color-brand-blue:var(--brand-blue);--color-brand-red:var(--brand-red);--color-brand-green:var(--brand-green)}
 html{scroll-behavior:smooth}body{margin:0;background:#fff;color:var(--brand-ink);font-family:Arial,Helvetica,sans-serif}*,*::before,*::after{box-sizing:border-box}button,input,select,textarea{font:inherit}a{text-decoration:none;color:inherit}button,a{-webkit-tap-highlight-color:transparent}
 :focus-visible{outline:3px solid var(--brand-red);outline-offset:3px}.container-shell{width:min(1200px,calc(100% - 2.25rem));margin-inline:auto}
 .skip-link{position:absolute;left:1rem;top:-6rem;z-index:1000;background:white;padding:1rem;box-shadow:0 5px 30px #0002}.skip-link:focus{top:1rem}
