@@ -35,7 +35,7 @@ export function toLagosIso(value:string):string|null{
   if(!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value))throw new Error('Choose a valid date and time.');
   // Benue State uses Africa/Lagos (UTC+01:00) year-round.
   const date=new Date(value+':00+01:00');
-  if(Number.isNaN(date.valueOf())||date.toISOString().slice(0,16)!==new Date(Date.parse(value+':00+01:00')).toISOString().slice(0,16))throw new Error('Invalid date or time.');
+  if(Number.isNaN(date.valueOf()))throw new Error('Invalid date or time.');
   const local=new Date(date.getTime()+60*60*1000).toISOString().slice(0,16);
   if(local!==value)throw new Error('Invalid local date or time.');
   return date.toISOString();
@@ -74,7 +74,7 @@ export async function loadRegistrationPage(f:AdminFilters){
    AND (${f.pu}::text='' OR pu_code=${f.pu})
    AND (${f.category}::text='' OR category=${f.category})
    AND (${start}::timestamptz IS NULL OR created_at>=${start}::timestamptz)
-   AND (${end}::timestamptz IS NULL OR created_at<=${end}::timestamptz)
+   AND (${end}::timestamptz IS NULL OR created_at<(${end}::timestamptz + INTERVAL '1 minute'))
    AND (${f.q}::text='' OR full_name ILIKE ${pattern} OR COALESCE(phone,'') ILIKE ${pattern} OR reference::text ILIKE ${pattern})
  `;
  const rows=await sql`
@@ -86,7 +86,7 @@ export async function loadRegistrationPage(f:AdminFilters){
    AND (${f.pu}::text='' OR pu_code=${f.pu})
    AND (${f.category}::text='' OR category=${f.category})
    AND (${start}::timestamptz IS NULL OR created_at>=${start}::timestamptz)
-   AND (${end}::timestamptz IS NULL OR created_at<=${end}::timestamptz)
+   AND (${end}::timestamptz IS NULL OR created_at<(${end}::timestamptz + INTERVAL '1 minute'))
    AND (${f.q}::text='' OR full_name ILIKE ${pattern} OR COALESCE(phone,'') ILIKE ${pattern} OR reference::text ILIKE ${pattern})
  ORDER BY created_at DESC,id DESC
  LIMIT ${PAGE_SIZE} OFFSET ${(f.page-1)*PAGE_SIZE}`;
@@ -118,7 +118,7 @@ export async function getExportBatch(f:AdminFilters,cursor:string|null,limit=500
   AND (${f.pu}::text='' OR pu_code=${f.pu})
   AND (${f.category}::text='' OR category=${f.category})
   AND (${start}::timestamptz IS NULL OR created_at>=${start}::timestamptz)
-  AND (${end}::timestamptz IS NULL OR created_at<=${end}::timestamptz)
+  AND (${end}::timestamptz IS NULL OR created_at<(${end}::timestamptz + INTERVAL '1 minute'))
   AND (${f.q}::text='' OR full_name ILIKE ${pattern} OR COALESCE(phone,'') ILIKE ${pattern} OR reference::text ILIKE ${pattern})
   AND (${cursor}::bigint IS NULL OR id<${cursor}::bigint)
  ORDER BY id DESC LIMIT ${limit}`;
